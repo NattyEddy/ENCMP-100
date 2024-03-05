@@ -40,6 +40,9 @@ import matplotlib.pyplot as plt
 tsp = io.loadmat('tspData.mat',squeeze_me=True)
 tsp = np.ndarray.tolist(tsp['tsp'])
 
+
+## MENU PROMPT 
+#  prompts user for options and returns the user selection
 def menu():
     print()
     print("MAIN MENU")
@@ -53,6 +56,9 @@ def menu():
         choice = int(input("Choice (0-3)? "))
     return choice
 
+
+## PLOT COORDS
+#  defines the graph of a given dataset
 def plotEuc2D(coord, comment, name):
     x_coords = []
     y_coords = []
@@ -61,13 +67,20 @@ def plotEuc2D(coord, comment, name):
         x_coords += [coord[i][0]]
         y_coords += [coord[i][1]]
     
-    plt.plot(x_coords, y_coords, label = name)
+    start_finish_coords = [[x_coords[0], x_coords[-1]], [y_coords[0], y_coords[-1]]]
+    
+    plt.plot(x_coords, y_coords, ".-", label = name)
+    plt.plot(start_finish_coords[0], start_finish_coords[1], ".r-")
     plt.xlabel("x-coordinate")
     plt.ylabel("y-coordinate")
     plt.title(comment)
     plt.legend()
+    plt.savefig("tspPlot.png")
     plt.show()
 
+
+## SELECTION 1: PRINT DATABASE
+#  prints out the database of location data that can be used
 def tspPrint():
     print()
     print("NUM  FILE NAME  EDGE TYPE  DIMENSION  COMMENT")
@@ -79,6 +92,9 @@ def tspPrint():
         print("%3d  %-9.9s  %-9.9s  %9d  %s"
               % (k,name,edge,dimension,comment))
         
+
+## SELECTION 3: PLOT ONE TOUR
+#  takes one set from the database and plots their coordinates
 def tspPlot():
     num = int(input("Number (EUC_2D)? "))
     edge = tsp[num][5]
@@ -103,6 +119,5 @@ def main():
             tspPlot()
     
         choice = menu()
-    
     
 main()
