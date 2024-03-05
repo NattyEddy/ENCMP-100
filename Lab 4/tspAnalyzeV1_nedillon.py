@@ -32,43 +32,15 @@
 #
 import scipy.io as io
 import numpy as np
+import matplotlib.pyplot as plt
 
+
+## DATA / CONSTANTS
+#  universal access for the whole program
 tsp = io.loadmat('tspData.mat',squeeze_me=True)
 tsp = np.ndarray.tolist(tsp['tsp'])
-file = open('tspAbout.txt','r')
-print(file.read())
-file.close()
-print()
-print("MAIN MENU")
-print("0. Exit program")
-print("1. Print database")
-print("2. Limit dimension")
-print("3. Plot one tour")
-print()
-choice = int(input("Choice (0-3)? "))
-while not (0 <= choice <= 3):
-    choice = int(input("Choice (0-3)? "))
 
-while choice != 0:
-    if choice == 1:
-        print()
-        print("NUM  FILE NAME  EDGE TYPE  DIMENSION  COMMENT")
-        for k in range(1,len(tsp)):
-            name = tsp[k][0]
-            edge = tsp[k][5]
-            dimension = tsp[k][3]
-            comment = tsp[k][2]
-            print("%3d  %-9.9s  %-9.9s  %9d  %s"
-                  % (k,name,edge,dimension,comment))
-
-    elif choice == 3:
-        num = int(input("Number (EUC_2D)? "))
-        edge = tsp[num][5]
-        if edge == 'EUC_2D':
-            print("Valid (%s)!!!" % edge)
-        else:
-            print("Invalid (%s)!!!" % edge)
-
+def menu():
     print()
     print("MAIN MENU")
     print("0. Exit program")
@@ -79,3 +51,58 @@ while choice != 0:
     choice = int(input("Choice (0-3)? "))
     while not (0 <= choice <= 3):
         choice = int(input("Choice (0-3)? "))
+    return choice
+
+def plotEuc2D(coord, comment, name):
+    x_coords = []
+    y_coords = []
+    
+    for i in range(0, len(coord)):
+        x_coords += [coord[i][0]]
+        y_coords += [coord[i][1]]
+    
+    plt.plot(x_coords, y_coords, label = name)
+    plt.xlabel("x-coordinate")
+    plt.ylabel("y-coordinate")
+    plt.title(comment)
+    plt.legend()
+    plt.show()
+
+def tspPrint():
+    print()
+    print("NUM  FILE NAME  EDGE TYPE  DIMENSION  COMMENT")
+    for k in range(1,len(tsp)):
+        name = tsp[k][0]
+        edge = tsp[k][5]
+        dimension = tsp[k][3]
+        comment = tsp[k][2]
+        print("%3d  %-9.9s  %-9.9s  %9d  %s"
+              % (k,name,edge,dimension,comment))
+        
+def tspPlot():
+    num = int(input("Number (EUC_2D)? "))
+    edge = tsp[num][5]
+    tsp1 = tsp[num]
+    if edge == 'EUC_2D':
+        print("See tspPlot.png")
+        plotEuc2D(tsp1[10], tsp1[2], tsp1[0])
+    else:
+        print("Invalid (%s)!!!" % edge)
+
+def main():
+    
+    file = open('tspAbout.txt','r')
+    print(file.read())
+    file.close()
+    choice = menu()
+    
+    while choice != 0:
+        if choice == 1:
+            tspPrint()
+        elif choice == 3:
+            tspPlot()
+    
+        choice = menu()
+    
+    
+main()
