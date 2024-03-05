@@ -1,0 +1,2 @@
+Rydberg constant: 10973730 1/m
+Final state (nf): 2
