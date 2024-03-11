@@ -103,6 +103,7 @@ def tspPrint(tsp):
         print("%3d  %-9.9s  %-9.9s  %9d  %s"
               % (k,name,edge,dimension,comment))
         
+        
 ## SELECTION 2: LIMIT DIMENSION
 #  description: limits the database by the desired dimension
 #               limit
@@ -118,6 +119,24 @@ def tspLimit(tsp):
         dimensions += [tsp[i][3]]        
     tsp_min = min(dimensions)
     tsp_max = max(dimensions)
+    tsp_new = tsp
+    print("Minimum dimension: %d" % tsp_min)
+    print("Maximum dimension: %d" % tsp_max)
+    limit = -1
+    while True:
+        if limit == 0: 
+            print("Cancelling operation...")
+            break;
+        elif (limit >= tsp_min and limit <= tsp_max):
+            print("Limiting dimension to %d..." % limit)
+            tsp_new = [tsp[0]]
+            for i in range(1, len(tsp)):
+                if tsp[i][3] <= limit:
+                    tsp_new += [tsp[i]]
+            break;
+        else:
+            limit = int(input("Limit (enter 0 to cancel): "))
+    return tsp_new
     
 
 ## SELECTION 3: PLOT ONE TOUR
@@ -130,14 +149,17 @@ def tspLimit(tsp):
 #          of the desired file, and plots it if it is of
 #          type "EUC_2D" using function "plotEuc2D()"
 def tspPlot(tsp):
-    num = int(input("Number (EUC_2D)? "))
-    edge = tsp[num][5]
-    tsp1 = tsp[num]
-    if edge == 'EUC_2D':
-        print("See tspPlot.png")
-        plotEuc2D(tsp1[10], tsp1[2], tsp1[0])
-    else:
-        print("Invalid (%s)!!!" % edge)
+    while True:
+        num = int(input("Number (EUC_2D)? "))
+        if num > len(tsp) - 1:
+            pass
+        else:
+            edge = tsp[num][5]
+            tsp1 = tsp[num]
+            if edge == 'EUC_2D':
+                print("See tspPlot.png")
+                plotEuc2D(tsp1[10], tsp1[2], tsp1[0])
+                break
 
 
 def main():
@@ -151,7 +173,7 @@ def main():
         if choice == 1:
             tspPrint(tsp)
         elif choice == 2:
-            tspLimit(tsp)
+            tsp = tspLimit(tsp)
         elif choice == 3:
             tspPlot(tsp)
     
