@@ -34,6 +34,13 @@ import scipy.io as io
 import numpy as np
 import matplotlib.pyplot as plt
 
+'''
+DEBUG PROGRAM
+
+CONTAINS CODE TO PARSE THROUGH ALL POSSIBLE PLOT ENTRIES
+
+'''
+
 
 ## MENU PROMPT 
 #  description: prompts user for options and returns the user selection
@@ -49,8 +56,8 @@ def menu():
     print("2. Limit dimension")
     print("3. Plot one tour")
     print()
-    choice = int(input("Choice (0-3)? "))
-    while not (0 <= choice <= 3):
+    choice = int(input("Choice (0-3)? ")) # choice 4 hidden
+    while not (0 <= choice <= 4):
         choice = int(input("Choice (0-3)? "))
     return choice
 
@@ -73,35 +80,16 @@ def plotEuc2D(coord, comment, name):
         x_coords += [coord[i][0]]
         y_coords += [coord[i][1]]
     
-    if len(x_coords) > 0 and len(y_coords) > 0:
-        start_finish_coords = [[x_coords[0], x_coords[-1]], [y_coords[0], y_coords[-1]]]
-        
-        print("See tspPlot.png:")
-        plt.plot(x_coords, y_coords, ".-", label = name)
-        plt.plot(start_finish_coords[0], start_finish_coords[1], ".r-")
-        plt.xlabel("x-coordinate")
-        plt.ylabel("y-coordinate")
-        plt.title(comment)
-        plt.legend()
-        plt.savefig("tspPlot.png")
-        plt.show()
-    else:
-        print("Error: entry may have missing data.")
-        
-## TSP MIN / MAX DIMENSION
-#  description: defines the minimum and maximum dimensions values,
-#               used for SELECTION 2
-#  input: database "tsp"
-#  output: array [input, output]
-#  action: puts dimensions of database in its own list, then uses
-#          built-in min and max functions to find min and max
-def tspMinMax(tsp):
-    dimensions = []
-    for i in range(1, len(tsp)):
-        dimensions += [tsp[i][3]]        
-    tsp_min = min(dimensions)
-    tsp_max = max(dimensions)
-    return [tsp_min, tsp_max]
+    start_finish_coords = [[x_coords[0], x_coords[-1]], [y_coords[0], y_coords[-1]]]
+    
+    plt.plot(x_coords, y_coords, ".-", label = name)
+    plt.plot(start_finish_coords[0], start_finish_coords[1], ".r-")
+    plt.xlabel("x-coordinate")
+    plt.ylabel("y-coordinate")
+    plt.title(comment)
+    plt.legend()
+    plt.savefig("tspPlot.png")
+    plt.show()
 
 
 ## SELECTION 1: PRINT DATABASE
@@ -133,13 +121,13 @@ def tspPrint(tsp):
 #          evaluate whether the desired limit is valid considering
 #          the min and max, then remove any 
 def tspLimit(tsp):
-    # dimensions = []
-    # for i in range(1, len(tsp)):
-    #     dimensions += [tsp[i][3]]        
-    # tsp_min = min(dimensions)
-    # tsp_max = max(dimensions)
-    print("Minimum dimension: %d" % tspMinMax(tsp)[0])
-    print("Maximum dimension: %d" % tspMinMax(tsp)[1])
+    dimensions = []
+    for i in range(1, len(tsp)):
+        dimensions += [tsp[i][3]]        
+    tsp_min = min(dimensions)
+    tsp_max = max(dimensions)
+    print("Minimum dimension: %d" % tsp_min)
+    print("Maximum dimension: %d" % tsp_max)
     
     tsp_new = tsp
     limit = -1
@@ -147,7 +135,7 @@ def tspLimit(tsp):
         if limit == 0: 
             print("Cancelling operation...")
             break;
-        elif (limit >= tspMinMax(tsp)[0] and limit <= tspMinMax(tsp)[1]):
+        elif (limit >= tsp_min and limit <= tsp_max):
             print("Limiting dimension to %d..." % limit)
             tsp_new = [tsp[0]]
             for i in range(1, len(tsp)):
@@ -177,8 +165,23 @@ def tspPlot(tsp):
             edge = tsp[num][5]
             tsp1 = tsp[num]
             if edge == 'EUC_2D':
+                print("See tspPlot.png")
                 plotEuc2D(tsp1[10], tsp1[2], tsp1[0])
                 break
+            
+
+## SELECTION 4: PLOT ALL TOURS
+#  DEBUG ONLY FEATURE: TEST ALL CASES
+#  FINDS WHICH EUC_2D CASES NEED CAREFUL ATTENTION
+#  input: database "tsp"
+#  output: none
+#  action: parse through whole database, filter out edge file type
+#          "EUC_2D", then attempt to plot all entries
+def tspPlotAll(tsp):
+    for i in range(1, len(tsp)):
+        if tsp[i][5] == "EUC_2D":
+            print("See tspPlot.png")
+            plotEuc2D(tsp[i][10], tsp[i][2], tsp[i][0]) # refer to SELECTION 3
 
 
 def main():
@@ -195,6 +198,8 @@ def main():
             tsp = tspLimit(tsp)
         elif choice == 3:
             tspPlot(tsp)
+        elif choice == 4:
+            tspPlotAll(tsp)
     
         choice = menu()
     
