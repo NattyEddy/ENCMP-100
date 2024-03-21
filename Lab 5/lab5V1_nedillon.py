@@ -11,9 +11,9 @@
 # Electrical and Computer Engineering
 # All rights reserved.
 #
-# Student name: Nathan Edillon 100%
+# Student name: Nathan Edillon 95%
 # Student CCID: nedillon
-# Others:
+# Others: GOLDEN 5%
 #
 # To avoid plagiarism, list the names of persons, Version 0 author(s)
 # excluded, whose code, words, ideas, or data you used. To avoid
@@ -53,7 +53,7 @@ def loaddata(filename):
             num = num+1
             if num % 10000 == 0:
                 print(filename,":",num,"line(s)")
-            datum = str2dict(num, line)
+            datum = str2dict(line)
             data.append(datum)
         else:
             break # for
@@ -63,14 +63,18 @@ def loaddata(filename):
         print(filename,":",num,"line(s)")
     return data
 
-def str2dict(numdate, strdate):
-    strdate = "Day "+str(numdate)
-    yaph = 6.98169e7 # Aphelion (km)
-    yprh = 4.60012e7 # Perihelion (km)
-    days = 87.9691 # Orbit period (d)
-    sine = (np.cos(2*np.pi*numdate/days)+1)/2
+def str2dict(data):
+    metadata = data.split(",")
+    caldate = metadata[1].split()
+    
+    numdate = float(metadata[0])
+    strdate = caldate[1]
+    x = float(metadata[2])
+    y = float(metadata[3])
+    z = float(metadata[4])
+    
     return {'numdate':numdate,'strdate':strdate,
-            'coord':(0,yprh+(yaph-yprh)*sine,0)}
+            'coord':(x, y, z)}
 
 def locate(data1):
     dist = [] # Vector lengths
@@ -85,14 +89,20 @@ def locate(data1):
     return data2
 
 def select(data,ystep,month):
-    if len(data) > 10:
-        data = data[0:10]
-    return data
+    accepted_data = []
+    for line in data:
+        string = line.get("strdate")
+        meta = string.split("-")
+        if meta[1] in month and int(meta[0]) % ystep == 0:
+            accepted_data.append(line)   
+    return accepted_data
 
 def makeplot(data,filename):
     (numdate,strdate,arcsec) = precess(data)
     plt.plot(numdate,arcsec,'bo')
     plt.xticks(numdate,strdate,rotation=45)
+    plt.xlabel("Perihelion date")
+    plt.ylabel("Precession (arcsec)")
     add2plot(numdate,arcsec)
     plt.savefig(filename+'.png',bbox_inches='tight')
     plt.show()
