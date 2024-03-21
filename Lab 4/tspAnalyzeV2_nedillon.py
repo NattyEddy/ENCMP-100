@@ -88,6 +88,7 @@ def plotEuc2D(coord, comment, name):
     else:
         print("Error: entry may have missing data.")
         
+        
 ## TSP MIN / MAX DIMENSION
 #  description: defines the minimum and maximum dimensions values,
 #               used for SELECTION 2
@@ -128,19 +129,14 @@ def tspPrint(tsp):
 #               limit
 #  input: database "tsp"
 #  output: none
-#  action: after calculating the min and max values of file
-#          dimensions and asking for the user's desired limit,
-#          evaluate whether the desired limit is valid considering
-#          the min and max, then remove any 
+#  action: print the min and max values of file dimensions and ask 
+#          for the user's desired limit, evaluate whether the desired 
+#          limit is valid considering the min and max, then remove any 
+#          files with dimensions beyond the new limit
+
 def tspLimit(tsp):
-    # dimensions = []
-    # for i in range(1, len(tsp)):
-    #     dimensions += [tsp[i][3]]        
-    # tsp_min = min(dimensions)
-    # tsp_max = max(dimensions)
     print("Minimum dimension: %d" % tspMinMax(tsp)[0])
     print("Maximum dimension: %d" % tspMinMax(tsp)[1])
-    
     tsp_new = tsp
     limit = -1
     while True:
@@ -179,7 +175,7 @@ def tspPlot(tsp):
             if edge == 'EUC_2D':
                 plotEuc2D(tsp1[10], tsp1[2], tsp1[0])
                 break
-
+            
 
 def main():
     tsp = io.loadmat('tspData.mat',squeeze_me=True)
