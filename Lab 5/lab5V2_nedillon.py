@@ -35,7 +35,8 @@ import matplotlib.pyplot as plt
 def main():
     data = loaddata('horizons_results')
     data = locate(data) # Perihelia
-    data = select(data,25,('Jan','Feb','Mar'))
+    data = select(data,50,('Jan','Feb','Mar'))
+    data = refine(data, 'horizons_results')
     makeplot(data,'horizons_results')
     savedata(data, 'horizons_results')
 
@@ -88,7 +89,7 @@ def str2dict(data):
             'coord':(x, y, z)}
 
 ## calculates magnitude of each coordinate and returns small coordinates in
-#  between greater ones
+#  between greater ones (locates perihelia)
 #  @param data1 - data pulled from a file
 #  @return list of selected data from data1
 def locate(data1):
@@ -109,13 +110,30 @@ def locate(data1):
 #  @param month - a set of strings with desired months
 def select(data,ystep,month):
     accepted_data = []
-    for line in data:
-        string = line.get("strdate")
+    for datum in data:
+        string = datum.get("strdate")
         meta = string.split("-")
         if meta[1] in month and int(meta[0]) % ystep == 0:
-            accepted_data.append(line)   
+            accepted_data.append(datum)   
     return accepted_data
 
+## refines data
+#  @param data - data to refine
+#  @param file - contains data that is more precise than the initial data
+#  for dates with more data, this function locates the first perihelion and
+#  returns these perihelia for each date in data
+def refine(data, file):
+    perihelion = []
+    for datum in data:
+        refineddata = loaddata('%s_%s' % (file, datum.get('strdate')))
+        refineddata = locate(refineddata)
+        perihelion.append(refineddata[0])
+    return perihelion
+
+## plots appropriate data
+#  @param data - data to plot
+#  @param filename - desired name of file to save the plot
+#  saves and displays the plot of perihelia
 def makeplot(data,filename):
     (numdate,strdate,arcsec) = precess(data)
     plt.plot(numdate,arcsec,'bo')
@@ -126,6 +144,10 @@ def makeplot(data,filename):
     plt.savefig(filename+'.png',bbox_inches='tight')
     plt.show()
 
+## calculates arcsec from data
+#  @param data - data to extract from
+#  @return (numdate,strdate,arcsec) - tuple of associated data values and
+#                                     calculated arcsec
 def precess(data):
     numdate = []
     strdate = []
@@ -141,13 +163,21 @@ def precess(data):
             arcsec.append(angle)
     return (numdate,strdate,arcsec)
 
+## info to add to plotted figure
+#  @param numdate - date pulled from data (format YYYY-MM-DD)
+#  @param actual - arcsec value
+#  adds information such as linear best fit, legend, and title
 def add2plot(numdate,actual):
     r = stats.linregress(numdate,actual)
     bestfit = []
+    daysperyear = 365.25 # days in a year (on average)
+    yearspercent = 100.0 # years in a century
     for k in range(len(numdate)):
         bestfit.append(r[0]*numdate[k]+r[1])
     plt.plot(numdate,bestfit,'b-')
     plt.legend(["Actual data","Best fit line"])
+    plt.title("Slope of best fit line: %.2f arcsec/cent" % (r[0] * daysperyear
+                                                          * yearspercent))
     
 ## save specified data into a csv file
 #  @param data - desired data
@@ -163,5 +193,6 @@ def savedata(data, filename):
                                          line.get('coord')[0],
                                          line.get('coord')[1], 
                                          line.get('coord')[2]))
+
 
 main()
