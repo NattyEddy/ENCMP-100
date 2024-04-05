@@ -55,6 +55,7 @@ def opticalSystem(im,width):
 ## Occult Square
 #  @param im - image data
 #  @param width - desired width of square
+#  @return im - altered image data
 #  take an image and place a square of desired width in the center
 def occultSquare(im,width):
     im[im.shape[0]//2 - width//2 : im.shape[0]//2 + width//2,
@@ -84,6 +85,7 @@ def idft2(IMa,IMp):
 #  @param im - image data
 #  @param maxIters - the amount of iterations to create
 #  @param Dphi - phase aberration in the pupil plane of the coronagraph
+#  @return - images - image data post-algorithm
 #  does some math to simulate the GS algorithm, creating a set of images
 #  of a desired amount of iterations
 def gerchbergSaxton(im,maxIters,Dphi):
