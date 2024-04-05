@@ -52,6 +52,10 @@ def opticalSystem(im,width):
     im = idft2(IMa,IMp-Dphi)
     return (im,Dphi)
 
+## Occult Square
+#  @param im - image data
+#  @param width - desired width of square
+#  take an image and place a square of desired width in the center
 def occultSquare(im,width):
     im[im.shape[0]//2 - width//2 : im.shape[0]//2 + width//2,
        im.shape[1]//2 - width//2 : im.shape[1]//2 + width//2] = 0
@@ -76,6 +80,12 @@ def idft2(IMa,IMp):
     im[im > 1] = 1
     return im
 
+## Gerchberg Saxton Algorithm
+#  @param im - image data
+#  @param maxIters - the amount of iterations to create
+#  @param Dphi - phase aberration in the pupil plane of the coronagraph
+#  does some math to simulate the GS algorithm, creating a set of images
+#  of a desired amount of iterations
 def gerchbergSaxton(im,maxIters,Dphi):
     (IMa,IMp) = dft2(im)
     images = []
@@ -85,6 +95,11 @@ def gerchbergSaxton(im,maxIters,Dphi):
         images.append(im)
     return images
 
+## Save Frames
+#  @param images - data of a set of images
+#  takes data that forms images to form black and white photos, shows each
+#  iteration of the photos in succession, and saves them as "coronograph"
+#  .png files
 def saveFrames(images):
     shape = (images[0].shape[0],images[0].shape[1],3)
     image = np.zeros(shape,images[0].dtype)
