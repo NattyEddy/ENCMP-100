@@ -9,9 +9,9 @@
 # Electrical and Computer Engineering
 # All rights reserved.
 #
-# Student name: Nathan Edillon 98%
+# Student name: Nathan Edillon 95%
 # Student CCID: nedillon
-# Others: GOLDEN 2%
+# Others: GOLDEN 2%, TOPGUN 3%
 #
 # To avoid plagiarism, list the names of persons, Version 0 author(s)
 # excluded, whose code, words, ideas, or data you used. To avoid
@@ -76,12 +76,12 @@ def idft2(IMa,IMp):
     im[im > 1] = 1
     return im
 
-def gerchbergSaxton(im,maxIters,_):
+def gerchbergSaxton(im,maxIters,Dphi):
     (IMa,IMp) = dft2(im)
     images = []
     for k in range(maxIters+1):
         print("Iteration %d of %d" % (k,maxIters))
-        im = idft2(IMa,IMp)
+        im = idft2(IMa,IMp+(k/maxIters*Dphi))
         images.append(im)
     return images
 
